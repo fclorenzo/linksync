@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "out",
+    "public": " ",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -8,14 +8,14 @@
     ],
     "rewrites": [
       {
-        "source": "/**",
+        "source": "**",
         "destination": "/index.html"
       }
     ]
   },
   "firestore": {
-    "indexes": [],
-    "rules": "firestore.rules"
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
   },
   "auth": {
     "emulators": [

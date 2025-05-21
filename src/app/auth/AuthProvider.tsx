@@ -1,8 +1,14 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { useRouter } from 'next/router';
+"use client";
 
-const AuthContext = createContext(null);
+import { createContext, useContext, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { auth } from "../../lib/firebase";
+
+interface AuthContextType {
+  user: any;
+}
+
+const AuthContext = createContext<AuthContextType | null>(null);
 
 export const useAuth = () => useContext(AuthContext);
 
@@ -11,18 +17,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setUser(user);
       } else {
         setUser(null);
-        router.push('/auth/login'); // Redirect to login if not authenticated
+        router.push("/auth/login");
       }
     });
 
     return unsubscribe;
-  }, []);
+  }, [router]);
 
   return (
     <AuthContext.Provider value={{ user }}>

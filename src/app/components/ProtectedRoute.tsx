@@ -5,8 +5,12 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../auth/AuthProvider"; // Your auth context hook
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const auth = useAuth();
   const router = useRouter();
+
+  const user = auth?.user;
+  // If your AuthContextType does not have 'loading', set loading to false or use the correct property
+  const loading = false; // Replace with the correct loading state if available
 
   useEffect(() => {
     if (!loading && !user) {

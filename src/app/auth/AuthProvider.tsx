@@ -3,9 +3,10 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "../../lib/firebase";
+import type { User } from "firebase/auth";
 
 interface AuthContextType {
-  user: any;
+  user: User | null;  // Use Firebase User type or null
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -13,7 +14,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
   useEffect(() => {

@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from 'react';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'next/router';
@@ -15,10 +17,10 @@ export default function Login() {
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/dashboard'); // Redirect after login
     } catch (error) {
-  const firebaseError = error as FirebaseError;
-  setError(firebaseError.message);
+      const firebaseError = error as FirebaseError;
+      setError(firebaseError.message);
     }
-};
+  };
 
   return (
     <div>

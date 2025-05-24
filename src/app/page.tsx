@@ -6,7 +6,7 @@ export default function Home() {
     <div>
       <h1>Welcome to the Home Page</h1>
       <p>
-        Please <Link href="/auth/login">login</Link> to continue.
+        Please <Link href="/login">login</Link> to continue.
       </p>
     </div>
   );

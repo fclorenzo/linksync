@@ -1,5 +1,5 @@
 // app/dashboard/page.tsx
-import ProtectedRoute from "../components/ProtectedRoute";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function Dashboard() {
   return (

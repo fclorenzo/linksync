@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../auth/AuthProvider"; // Your auth context hook
+import { useAuth } from "@/providers/AuthProvider"; // Your auth context hook
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const auth = useAuth();

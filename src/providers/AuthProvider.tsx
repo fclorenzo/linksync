@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect } from "react";
 //import { useRouter } from "next/navigation";
-import { auth } from "../../lib/firebase";
+import { auth } from "../lib/firebase";
 import type { User } from "firebase/auth";
 
 interface AuthContextType {

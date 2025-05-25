@@ -1,3 +1,5 @@
+// app/login/page.tsx
+
 "use client";
 
 import { useState } from "react";
@@ -38,7 +40,7 @@ export default function Login() {
 
   return (
     <div>
-      <h2>Login</h2>
+      <h2>Please Login to Continue</h2>
       <form onSubmit={handleSubmit}>
         <input
           type="email"
@@ -62,11 +64,11 @@ export default function Login() {
 
       {showSignupPrompt && (
         <p>
-          User not found. Would you like to{" "}
-          <Link href="/auth/signup" style={{ color: "blue" }}>
+          User not found. Please {" "}
+          <Link href="/auth/signup">
             sign up
           </Link>
-          ?
+          to continue.
         </p>
       )}
     </div>

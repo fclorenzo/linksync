@@ -1,3 +1,5 @@
+// app/signup/page.tsx
+
 "use client";
 
 import { useState } from "react";
@@ -46,7 +48,7 @@ export default function SignUp() {
         <br />
         <button type="submit">Sign Up</button>
       </form>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p >{error}</p>}
     </div>
   );
 }

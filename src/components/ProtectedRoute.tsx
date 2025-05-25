@@ -1,3 +1,5 @@
+// app/components/ProtectedRoute.tsx
+
 "use client"; // Mark as client-side component
 
 import { useEffect } from "react";

@@ -8,6 +8,8 @@
 
 @tailwind utilities;
 
+@plugin "daisyui";
+
 /* Define CSS variables for light mode */
 :root {
   --background: #ffffff;

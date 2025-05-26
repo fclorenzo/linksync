@@ -1,15 +1,14 @@
-// components/LogoutButton.tsx
+// components/LogOutButton.tsx
 
-import { getAuth, signOut } from "firebase/auth";
-import { useRouter } from "next/navigation";
+"use client";
+
+import { useAuth } from "@/providers/AuthProvider";
 
 export default function LogoutButton() {
-  const router = useRouter();
+  const { signOut } = useAuth();
 
   const handleLogout = async () => {
-    const auth = getAuth();
-    await signOut(auth);
-    router.push("/auth/login"); // Redirect to login after logout
+    await signOut();
   };
 
   return (

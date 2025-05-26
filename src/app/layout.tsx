@@ -1,8 +1,9 @@
 // app/layout.tsx
 
-import './globals.css';
+import '@/styles/globals.css';
 import { Geist, Geist_Mono } from 'next/font/google';
 import SiteHeader from '../components/SiteHeader';
+import { AuthUserProvider } from "../providers/AuthProvider";
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -27,8 +28,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <SiteHeader />
-        {children}
+        <AuthUserProvider>
+          <SiteHeader />
+          {children}
+        </AuthUserProvider>
       </body>
     </html>
   );

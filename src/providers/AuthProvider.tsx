@@ -1,32 +1,56 @@
+// providers/AuthProvider.tsx
+
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
-//import { useRouter } from "next/navigation";
-import { auth } from "../lib/firebase";
-import type { User } from "firebase/auth";
+import React, { createContext, useContext, ReactNode } from "react";
+import useFirebaseAuth from "../lib/useFirebaseAuth";
+
+type AuthUser = {
+  uid: string;
+  email: string | null;
+};
 
 interface AuthContextType {
-  user: User | null;
+  authUser: AuthUser | null;
+  loading: boolean;
+  signInWithEmailAndPassword: (email: string, password: string) => Promise<any>;
+  createUserWithEmailAndPassword: (email: string, password: string) => Promise<any>;
+  signOut: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+const defaultContext: AuthContextType = {
+  authUser: null,
+  loading: true,
+  signInWithEmailAndPassword: async () => {},
+  createUserWithEmailAndPassword: async () => {},
+  signOut: async () => {},
+};
 
-export const useAuth = () => useContext(AuthContext);
+const AuthUserContext = createContext<AuthContextType>(defaultContext);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
-    });
-
-    return unsubscribe;
-  }, []);
+export function AuthUserProvider({ children }: { children: ReactNode }) {
+  const {
+    authUser,
+    loading,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    signOut,
+  } = useFirebaseAuth();
 
   return (
-    <AuthContext.Provider value={{ user }}>
+    <AuthUserContext.Provider
+      value={{
+        authUser,
+        loading,
+        signInWithEmailAndPassword,
+        createUserWithEmailAndPassword,
+        signOut,
+      }}
+    >
       {children}
-    </AuthContext.Provider>
+    </AuthUserContext.Provider>
   );
-};
+}
+
+// Custom hook to consume the auth context easily
+export const useAuth = () => useContext(AuthUserContext);

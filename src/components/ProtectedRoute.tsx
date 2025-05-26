@@ -1,27 +1,27 @@
 // app/components/ProtectedRoute.tsx
 
-"use client"; // Mark as client-side component
+"use client";
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/providers/AuthProvider"; // Your auth context hook
+import { useAuth } from "@/providers/AuthProvider";
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const auth = useAuth();
+  const { authUser: user, loading } = useAuth();
   const router = useRouter();
-
-  const user = auth?.user;
-  // If your AuthContextType does not have 'loading', set loading to false or use the correct property
-  const loading = false; // Replace with the correct loading state if available
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push("/auth/login"); // Redirect to login if not authenticated
+      router.push("/login");
     }
   }, [loading, user, router]);
 
-  if (loading || !user) {
-    return <p>Loading...</p>; // Or a loading spinner
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (!user) {
+    return null; // or a fallback UI, since redirect is in progress
   }
 
   return <>{children}</>;

@@ -21,26 +21,27 @@ export default function CategorySidebar({
 }: Props) {
   return (
     <aside className="w-64 border-r p-4 flex flex-col">
-      <button
-        onClick={() => onSelectCategory(null)}
-        className={`mb-4 btn btn-ghost ${selectedCategory === null ? "btn-active" : ""}`}
-      >
-        All
-      </button>
+      <label htmlFor="category-select" className="mb-2 font-semibold">
+        Select Category
+      </label>
       {loading ? (
         <p>Loading categories...</p>
       ) : (
-        categories.map((cat) => (
-          <button
-            key={cat.id}
-            onClick={() => onSelectCategory(cat.id)}
-            className={`btn btn-ghost mb-2 text-left ${
-              selectedCategory === cat.id ? "btn-active" : ""
-            }`}
-          >
-            {cat.name}
-          </button>
-        ))
+        <select
+          id="category-select"
+          className="select select-bordered w-full mb-4"
+          value={selectedCategory ?? ""}
+          onChange={(e) =>
+            onSelectCategory(e.target.value === "" ? null : e.target.value)
+          }
+        >
+          <option value="">All</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
       )}
       <button className="btn btn-primary mt-auto" onClick={onAddCategory}>
         + Add Category

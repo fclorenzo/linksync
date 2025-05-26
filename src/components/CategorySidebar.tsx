@@ -7,8 +7,8 @@ import React from "react";
 interface Props {
   categories: Array<{ id: string; name: string }>;
   loading: boolean;
-  selectedCategory?: string;
-  onSelectCategory: (id?: string) => void;
+  selectedCategory: string | null; // null means "All"
+  onSelectCategory: (id: string | null) => void;
   onAddCategory: () => void;
 }
 
@@ -22,8 +22,8 @@ export default function CategorySidebar({
   return (
     <aside className="w-64 border-r p-4 flex flex-col">
       <button
-        onClick={() => onSelectCategory(undefined)}
-        className={`mb-4 btn btn-ghost ${selectedCategory === undefined ? "btn-active" : ""}`}
+        onClick={() => onSelectCategory(null)}
+        className={`mb-4 btn btn-ghost ${selectedCategory === null ? "btn-active" : ""}`}
       >
         All
       </button>

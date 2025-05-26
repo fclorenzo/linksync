@@ -28,39 +28,43 @@ export default function Dashboard() {
   const [showAddCategory, setShowAddCategory] = useState(false);
   const [showAddLink, setShowAddLink] = useState(false);
 
-  if (!userId) return null; // or loading state
+  //if (!userId) return null; // or loading state
 
   return (
     <ProtectedRoute>
-      <div className="flex h-screen max-w-7xl mx-auto p-4 gap-6">
-        <CategorySidebar
-          categories={categories}
-          loading={loadingCats}
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
-          onAddCategory={() => setShowAddCategory(true)}
-        />
-
-        <LinksSection
-          links={links}
-          loading={loadingLinks}
-          hasMore={hasMore}
-          fetchMore={fetchMore}
-          onAddLink={() => setShowAddLink(true)}
-        />
-
-        {showAddCategory && (
-          <AddCategoryModal onClose={() => setShowAddCategory(false)} userId={userId} />
-        )}
-
-        {showAddLink && (
-          <AddLinkModal
-            onClose={() => setShowAddLink(false)}
+      {!userId ? (
+        <p>Loading user info...</p>
+      ) : (
+        <div className="flex h-screen max-w-7xl mx-auto p-4 gap-6">
+          <CategorySidebar
             categories={categories}
-            userId={userId}
+            loading={loadingCats}
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+            onAddCategory={() => setShowAddCategory(true)}
           />
-        )}
-      </div>
+
+          <LinksSection
+            links={links}
+            loading={loadingLinks}
+            hasMore={hasMore}
+            fetchMore={fetchMore}
+            onAddLink={() => setShowAddLink(true)}
+          />
+
+          {showAddCategory && (
+            <AddCategoryModal onClose={() => setShowAddCategory(false)} userId={userId} />
+          )}
+
+          {showAddLink && (
+            <AddLinkModal
+              onClose={() => setShowAddLink(false)}
+              categories={categories}
+              userId={userId}
+            />
+          )}
+        </div>
+      )}
     </ProtectedRoute>
   );
 }

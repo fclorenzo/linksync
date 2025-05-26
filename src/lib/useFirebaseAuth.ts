@@ -1,4 +1,4 @@
-// lib/useFirebaseAuth.tsx
+// lib/useFirebaseAuth.ts
 
 import { useState, useEffect } from "react";
 import { auth } from "./firebase";

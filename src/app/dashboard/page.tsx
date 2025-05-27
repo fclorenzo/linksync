@@ -11,6 +11,7 @@ import LinksSection from "@/components/LinksSection";
 import CategoryModal from "@/components/CategoryModal";
 import LinkModal from "@/components/LinkModal";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { Link } from "@/lib/types"; // Adjust the import based on your project structure
 
 export default function Dashboard() {
   const [categoryToEdit, setCategoryToEdit] = useState<{ id: string; name: string } | null>(null);
@@ -27,10 +28,30 @@ export default function Dashboard() {
   } = useLinks(userId, selectedCategory ?? undefined);
 
   // Modals open/close state
-  const [showAddCategory, setShowAddCategory] = useState(false);
-  const [showAddLink, setShowAddLink] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showLinkModal, setShowLinkModal] = useState(false);
 
-  //if (!userId) return null; // or loading state
+  // Handlers to open modals in "edit" mode:
+  const handleEditCategory = (category: { id: string; name: string }) => {
+    setCategoryToEdit(category);
+    setShowCategoryModal(true);
+  };
+
+  const handleEditLink = (link: Link) => {
+    setLinkToEdit(link);
+    setShowLinkModal(true);
+  };
+
+  // Handlers to open modals in "add" mode:
+  const handleAddCategory = () => {
+    setCategoryToEdit(null);
+    setShowCategoryModal(true);
+  };
+
+  const handleAddLink = () => {
+    setLinkToEdit(null);
+    setShowLinkModal(true);
+  };
 
   return (
     <ProtectedRoute>
@@ -43,7 +64,8 @@ export default function Dashboard() {
             loading={loadingCats}
             selectedCategory={selectedCategory}
             onSelectCategory={setSelectedCategory}
-            onAddCategory={() => setShowAddCategory(true)}
+            onAddCategory={handleAddCategory}
+            onEditCategory={handleEditCategory}
           />
 
           <LinksSection
@@ -51,18 +73,40 @@ export default function Dashboard() {
             loading={loadingLinks}
             hasMore={hasMore}
             fetchMore={fetchMore}
-            onAddLink={() => setShowAddLink(true)}
+            onAddLink={handleAddLink}
+            onEditLink={handleEditLink}
           />
 
-          {showAddCategory && (
-            <CategoryModal onClose={() => setShowAddCategory(false)} userId={userId} />
+          {showCategoryModal && (
+            <CategoryModal
+              onClose={() => {
+                setShowCategoryModal(false);
+                setCategoryToEdit(null);
+              }}
+              userId={userId}
+              itemToEdit={categoryToEdit ?? undefined}
+              onSuccess={() => {
+                setShowCategoryModal(false);
+                setCategoryToEdit(null);
+                // Optionally refresh categories here if needed
+              }}
+            />
           )}
 
-          {showAddLink && (
+          {showLinkModal && (
             <LinkModal
-              onClose={() => setShowAddLink(false)}
+              onClose={() => {
+                setShowLinkModal(false);
+                setLinkToEdit(null);
+              }}
               categories={categories}
               userId={userId}
+              itemToEdit={linkToEdit ?? undefined}
+              onSuccess={() => {
+                setShowLinkModal(false);
+                setLinkToEdit(null);
+                // Optionally refresh links here if needed
+              }}
             />
           )}
         </div>

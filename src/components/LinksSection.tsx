@@ -3,13 +3,7 @@
 "use client";
 
 import React, { useRef, useCallback } from "react";
-
-interface Link {
-  id: string;
-  url: string;
-  title: string;
-  categoryId: string;
-}
+import { Link } from "@/lib/types"; // Adjust the import based on your project structure
 
 interface Props {
   links: Link[];

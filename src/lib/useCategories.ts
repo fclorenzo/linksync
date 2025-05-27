@@ -1,7 +1,8 @@
 // lib/useCategories.ts
 
 import { useState, useEffect } from "react";
-import { getCategories } from "./firestore";
+import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
+import { db } from "./firebase"; // Your Firestore instance
 
 export default function useCategories(userId: string) {
   const [categories, setCategories] = useState<Array<any>>([]);
@@ -9,18 +10,35 @@ export default function useCategories(userId: string) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId) {
+      setCategories([]);
+      setLoading(false);
+      return;
+    }
 
     setLoading(true);
-    getCategories(userId)
-      .then((cats) => {
+    setError(null);
+
+    const q = query(
+      collection(db, "categories"),
+      where("userId", "==", userId),
+      //orderBy("createdAt", "desc")
+    );
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const cats = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setCategories(cats);
         setLoading(false);
-      })
-      .catch((err) => {
+      },
+      (err) => {
         setError(err.message || "Failed to fetch categories");
         setLoading(false);
-      });
+      }
+    );
+
+    return () => unsubscribe();
   }, [userId]);
 
   return { categories, loading, error };

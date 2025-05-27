@@ -41,7 +41,7 @@ export default function CategorySidebar({
               onSelectCategory(e.target.value === "" ? null : e.target.value)
             }
           >
-            <option value="">All</option>
+            <option value="">Uncategorized</option>
             {categories.map((cat) => (
               <option key={cat.id} value={cat.id}>
                 {cat.name}

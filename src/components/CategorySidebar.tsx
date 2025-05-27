@@ -10,6 +10,7 @@ interface Props {
   selectedCategory: string | null; // null means "All"
   onSelectCategory: (id: string | null) => void;
   onAddCategory: () => void;
+  onEditCategory: (category: { id: string; name: string }) => void;
 }
 
 export default function CategorySidebar({
@@ -18,7 +19,11 @@ export default function CategorySidebar({
   selectedCategory,
   onSelectCategory,
   onAddCategory,
+  onEditCategory,
 }: Props) {
+  // Find the selected category object for editing:
+  const selectedCategoryObj = categories.find(cat => cat.id === selectedCategory);
+
   return (
     <aside className="w-64 border-r p-4 flex flex-col">
       <label htmlFor="category-select" className="mb-2 font-semibold">
@@ -27,22 +32,33 @@ export default function CategorySidebar({
       {loading ? (
         <p>Loading categories...</p>
       ) : (
-        <select
-          id="category-select"
-          className="select select-bordered w-full mb-4"
-          value={selectedCategory ?? ""}
-          onChange={(e) =>
-            onSelectCategory(e.target.value === "" ? null : e.target.value)
-          }
-        >
-          <option value="">All</option>
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
+        <>
+          <select
+            id="category-select"
+            className="select select-bordered w-full mb-4"
+            value={selectedCategory ?? ""}
+            onChange={(e) =>
+              onSelectCategory(e.target.value === "" ? null : e.target.value)
+            }
+          >
+            <option value="">All</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className={`btn btn-outline mb-4 ${!selectedCategoryObj ? "opacity-50 cursor-not-allowed" : ""}`}
+            disabled={!selectedCategoryObj}
+            onClick={() => selectedCategoryObj && onEditCategory(selectedCategoryObj)}
+          >
+            Edit Selected Category
+          </button>
+        </>
       )}
+
       <button className="btn btn-primary mt-auto" onClick={onAddCategory}>
         + Add Category
       </button>

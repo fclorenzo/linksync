@@ -8,11 +8,13 @@ import useCategories from "@/lib/useCategories";
 import useLinks from "@/lib/useLinks";
 import CategorySidebar from "@/components/CategorySidebar";
 import LinksSection from "@/components/LinksSection";
-import CategoryModal from "@/components/AddCategoryModal";
-import LinkModal from "@/components/AddLinkModal";
+import CategoryModal from "@/components/CategoryModal";
+import LinkModal from "@/components/LinkModal";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function Dashboard() {
+  const [categoryToEdit, setCategoryToEdit] = useState<{ id: string; name: string } | null>(null);
+  const [linkToEdit, setLinkToEdit] = useState<Link | null>(null);
   const { authUser } = useAuth();
   const userId = authUser?.uid ?? "";
   const { categories, loading: loadingCats } = useCategories(userId);
@@ -53,11 +55,11 @@ export default function Dashboard() {
           />
 
           {showAddCategory && (
-            <AddCategoryModal onClose={() => setShowAddCategory(false)} userId={userId} />
+            <CategoryModal onClose={() => setShowAddCategory(false)} userId={userId} />
           )}
 
           {showAddLink && (
-            <AddLinkModal
+            <LinkModal
               onClose={() => setShowAddLink(false)}
               categories={categories}
               userId={userId}

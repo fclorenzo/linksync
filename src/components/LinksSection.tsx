@@ -17,9 +17,10 @@ interface Props {
   hasMore: boolean;
   fetchMore: () => void;
   onAddLink: () => void;
+  onEditLink: (link: Link) => void;  // new prop for editing
 }
 
-export default function LinksSection({ links, loading, hasMore, fetchMore, onAddLink }: Props) {
+export default function LinksSection({ links, loading, hasMore, fetchMore, onAddLink, onEditLink }: Props) {
   const observer = useRef<IntersectionObserver | null>(null);
 
   const lastLinkRef = useCallback(
@@ -57,10 +58,11 @@ export default function LinksSection({ links, loading, hasMore, fetchMore, onAdd
                 key={link.id}
                 ref={lastLinkRef}
                 link={link}
+                onEditLink={onEditLink}  // pass down edit callback
               />
             );
           }
-          return <LinkCard key={link.id} link={link} />;
+          return <LinkCard key={link.id} link={link} onEditLink={onEditLink} />;
         })}
       </div>
 
@@ -69,22 +71,28 @@ export default function LinksSection({ links, loading, hasMore, fetchMore, onAdd
   );
 }
 
-const LinkCard = React.forwardRef<HTMLDivElement, { link: Link }>(
-  ({ link }, ref) => {
+const LinkCard = React.forwardRef<HTMLDivElement, { link: Link; onEditLink: (link: Link) => void }>(
+  ({ link, onEditLink }, ref) => {
     return (
-      <div
-        ref={ref}
-        className="card card-bordered p-4"
-      >
-        <a
-          href={link.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-bold text-blue-600 underline"
+      <div ref={ref} className="card card-bordered p-4 flex flex-col justify-between">
+        <div>
+          <a
+            href={link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-bold text-blue-600 underline break-all"
+          >
+            {link.title || link.url}
+          </a>
+          <p className="text-sm text-gray-500 break-all">{link.url}</p>
+        </div>
+        <button
+          className="btn btn-sm btn-ghost self-end mt-2"
+          onClick={() => onEditLink(link)}
+          aria-label={`Edit link ${link.title || link.url}`}
         >
-          {link.title || link.url}
-        </a>
-        <p className="text-sm text-gray-500 break-all">{link.url}</p>
+          ✏️
+        </button>
       </div>
     );
   }

@@ -8,8 +8,8 @@ import useCategories from "@/lib/useCategories";
 import useLinks from "@/lib/useLinks";
 import CategorySidebar from "@/components/CategorySidebar";
 import LinksSection from "@/components/LinksSection";
-import AddCategoryModal from "@/components/AddCategoryModal";
-import AddLinkModal from "@/components/AddLinkModal";
+import CategoryModal from "@/components/AddCategoryModal";
+import LinkModal from "@/components/AddLinkModal";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function Dashboard() {

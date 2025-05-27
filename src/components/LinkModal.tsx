@@ -1,29 +1,44 @@
-// components/AddLinkModal.tsx
+// components/LinkModal.tsx
 
 "use client";
 
-import { useState } from "react";
-import { addLink } from "@/lib/firestore";
+import { useState, useEffect } from "react";
+import { addLink, updateLink } from "@/lib/firestore";
 
 interface Category {
   id: string;
   name: string;
 }
 
+interface LinkItem {
+  id: string;
+  url: string;
+  title?: string;
+  categoryId: string;
+}
+
 interface Props {
   onClose: () => void;
   userId: string;
   categories: Category[];
+  itemToEdit?: LinkItem;
+  onSuccess?: () => void;
 }
 
-export default function AddLinkModal({ onClose, userId, categories }: Props) {
-  const [url, setUrl] = useState("");
-  const [title, setTitle] = useState("");
-  const [categoryId, setCategoryId] = useState(categories[0]?.id || "");
+export default function LinkModal({ onClose, userId, categories, itemToEdit, onSuccess }: Props) {
+  const [url, setUrl] = useState(itemToEdit?.url ?? "");
+  const [title, setTitle] = useState(itemToEdit?.title ?? "");
+  const [categoryId, setCategoryId] = useState(itemToEdit?.categoryId ?? (categories[0]?.id || ""));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Basic URL validation
+  useEffect(() => {
+    setUrl(itemToEdit?.url ?? "");
+    setTitle(itemToEdit?.title ?? "");
+    setCategoryId(itemToEdit?.categoryId ?? (categories[0]?.id || ""));
+  }, [itemToEdit, categories]);
+  const isEditMode = Boolean(itemToEdit);
+
   const isValidUrl = (str: string) => {
     try {
       new URL(str);
@@ -46,10 +61,19 @@ export default function AddLinkModal({ onClose, userId, categories }: Props) {
     setLoading(true);
     setError(null);
     try {
-      await addLink(url.trim(), title.trim(), categoryId, userId);
+      if (isEditMode && itemToEdit) {
+        await updateLink(itemToEdit.id, {
+          url: url.trim(),
+          title: title.trim(),
+          categoryId,
+        });
+      } else {
+        await addLink(url.trim(), title.trim(), categoryId, userId);
+      }
+      onSuccess?.();
       onClose();
     } catch (err: any) {
-      setError(err.message || "Failed to add link.");
+      setError(err.message || "Failed to save link.");
     } finally {
       setLoading(false);
     }
@@ -58,7 +82,7 @@ export default function AddLinkModal({ onClose, userId, categories }: Props) {
   return (
     <div className="modal modal-open">
       <div className="modal-box max-w-lg">
-        <h3 className="font-bold text-lg mb-4">Add New Link</h3>
+        <h3 className="font-bold text-lg mb-4">{isEditMode ? "Edit Link" : "Add New Link"}</h3>
         <form onSubmit={handleSubmit}>
           <input
             type="url"
@@ -103,7 +127,7 @@ export default function AddLinkModal({ onClose, userId, categories }: Props) {
               Cancel
             </button>
             <button type="submit" className={`btn btn-primary ${loading ? "loading" : ""}`}>
-              Add Link
+              {isEditMode ? "Save" : "Add Link"}
             </button>
           </div>
         </form>

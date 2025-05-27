@@ -12,6 +12,9 @@ import {
   deleteDoc,
   doc,
   Timestamp,
+  updateDoc,
+  DocumentSnapshot,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "./firebase"; // your initialized Firestore instance
 
@@ -42,13 +45,12 @@ export async function getLinks(
   userId: string,
   categoryId?: string,
   pageSize = 10,
-  startAfterDoc?: any // Firestore document snapshot for pagination
+  startAfterDoc?: DocumentSnapshot | null
 ) {
   let q = query(
     collection(db, "links"),
     where("userId", "==", userId),
-    orderBy("createdAt", "desc"),
-    limit(pageSize)
+    orderBy("createdAt", "desc")
   );
 
   if (categoryId) {
@@ -56,10 +58,11 @@ export async function getLinks(
       collection(db, "links"),
       where("userId", "==", userId),
       where("categoryId", "==", categoryId),
-      orderBy("createdAt", "desc"),
-      limit(pageSize)
+      orderBy("createdAt", "desc")
     );
   }
+
+  q = query(q, limit(pageSize));
 
   if (startAfterDoc) {
     q = query(q, startAfter(startAfterDoc));
@@ -76,7 +79,7 @@ export async function getLinks(
 export async function addLink(
   url: string,
   title: string,
-  categoryId: string,
+  categoryId: string | null,
   userId: string
 ) {
   const docRef = await addDoc(collection(db, "links"), {
@@ -92,4 +95,41 @@ export async function addLink(
 // Delete a link by id
 export async function deleteLink(linkId: string) {
   await deleteDoc(doc(db, "links", linkId));
+}
+
+export async function updateCategory(id: string, data: { name: string }) {
+  const categoryRef = doc(db, "categories", id);
+  await updateDoc(categoryRef, data);
+}
+
+// When deleting a category, reassign all its links to 'all' (null categoryId)
+export async function deleteCategory(categoryId: string) {
+  const batch = writeBatch(db);
+
+  // 1. Delete the category document
+  const categoryRef = doc(db, "categories", categoryId);
+  batch.delete(categoryRef);
+
+  // 2. Find all links with this categoryId and update their categoryId to null (all)
+  const linksQuery = query(
+    collection(db, "links"),
+    where("categoryId", "==", categoryId)
+  );
+  const linksSnapshot = await getDocs(linksQuery);
+
+  linksSnapshot.docs.forEach(linkDoc => {
+    batch.update(linkDoc.ref, { categoryId: null });
+  });
+
+  // Commit batch
+  await batch.commit();
+}
+
+// Update a link by id with partial update support
+export async function updateLink(
+  id: string,
+  data: { url?: string; title?: string; categoryId?: string | null }
+) {
+  const linkRef = doc(db, "links", id);
+  await updateDoc(linkRef, data);
 }

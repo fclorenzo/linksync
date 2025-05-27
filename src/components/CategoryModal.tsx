@@ -1,19 +1,28 @@
-// components/AddCategoryModal.tsx
+// components/CategoryModal.tsx
 
 "use client";
 
-import { useState } from "react";
-import { addCategory } from "@/lib/firestore";
+import { useState, useEffect } from "react";
+import { addCategory, updateCategory } from "@/lib/firestore";
 
 interface Props {
   onClose: () => void;
   userId: string;
+  itemToEdit?: { id: string; name: string };
+  onSuccess?: () => void;
 }
 
-export default function AddCategoryModal({ onClose, userId }: Props) {
-  const [name, setName] = useState("");
+export default function CategoryModal({ onClose, userId, itemToEdit, onSuccess }: Props) {
+  const [name, setName] = useState(itemToEdit?.name ?? "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Update state if itemToEdit changes (important if modal reused)
+  useEffect(() => {
+    setName(itemToEdit?.name ?? "");
+  }, [itemToEdit]);
+
+  const isEditMode = Boolean(itemToEdit);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,10 +33,15 @@ export default function AddCategoryModal({ onClose, userId }: Props) {
     setLoading(true);
     setError(null);
     try {
-      await addCategory(name.trim(), userId);
+      if (isEditMode && itemToEdit) {
+        await updateCategory(itemToEdit.id, { name: name.trim() });
+      } else {
+        await addCategory(name.trim(), userId);
+      }
+      onSuccess?.();
       onClose();
     } catch (err: any) {
-      setError(err.message || "Failed to add category.");
+      setError(err.message || "Failed to save category.");
     } finally {
       setLoading(false);
     }
@@ -36,7 +50,7 @@ export default function AddCategoryModal({ onClose, userId }: Props) {
   return (
     <div className="modal modal-open">
       <div className="modal-box">
-        <h3 className="font-bold text-lg mb-4">Add New Category</h3>
+        <h3 className="font-bold text-lg mb-4">{isEditMode ? "Edit Category" : "Add New Category"}</h3>
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -52,7 +66,7 @@ export default function AddCategoryModal({ onClose, userId }: Props) {
               Cancel
             </button>
             <button type="submit" className={`btn btn-primary ${loading ? "loading" : ""}`}>
-              Add
+              {isEditMode ? "Save" : "Add"}
             </button>
           </div>
         </form>

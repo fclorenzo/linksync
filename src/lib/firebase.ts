@@ -1,8 +1,11 @@
 // lib/firebase.tsx
 
-import { initializeApp, getApps } from 'firebase/app';
+import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
-import { getAuth } from 'firebase/auth';
+import { 
+  initializeAuth, 
+  indexedDBLocalPersistence
+} from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -15,10 +18,17 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID!,
 };
 
-const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+// Check if the app is already initialized, otherwise initialize it.
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
-const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
-
-export const auth = getAuth(app);
+// Initialize Firestore
 export const db = getFirestore(app);
+
+// Explicitly initialize Auth with persistent storage to match the extension.
+export const auth = initializeAuth(app, {
+  persistence: indexedDBLocalPersistence
+});
+
+// Initialize Analytics - this can stay as it is for your web app
+const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
 export { analytics };

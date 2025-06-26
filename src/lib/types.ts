@@ -5,3 +5,8 @@ export interface Link {
   title?: string;
   categoryId: string;
 }
+
+interface Category {
+  id: string;
+  name: string;
+}
